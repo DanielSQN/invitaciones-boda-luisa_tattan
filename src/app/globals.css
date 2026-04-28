@@ -1,0 +1,38 @@
+:root {
+  --paper: #f7f2e8;
+  --ink: #25332f;
+  --ink-muted: #5d6259;
+  --sage-deep: #1f312e;
+  --sage-dark: #2d403b;
+  --gold: #b48748;
+  --font-display: "Cormorant Garamond", "Bodoni 72", "Didot", "Times New Roman",
+    serif;
+  --font-small-caps: "Cinzel", "Trajan Pro", "Times New Roman", serif;
+  --font-body: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+html {
+  min-height: 100%;
+  background: var(--paper);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
