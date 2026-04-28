@@ -60,6 +60,13 @@ type Countdown = {
   seconds: number;
 };
 
+const initialCountdown: Countdown = {
+  days: 0,
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+};
+
 function getCountdown(targetDate: string): Countdown {
   const diff = Math.max(new Date(targetDate).getTime() - Date.now(), 0);
 
@@ -107,9 +114,7 @@ export default function Home() {
   const detailsRef = useRef<HTMLElement | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [guestName, setGuestName] = useState("Invitado especial");
-  const [countdown, setCountdown] = useState<Countdown>(() =>
-    getCountdown(weddingDetails.event.startsAt),
-  );
+  const [countdown, setCountdown] = useState<Countdown>(initialCountdown);
 
   const calendarUrl = useMemo(() => createCalendarUrl(), []);
   const whatsappUrl = useMemo(() => createWhatsappUrl(guestName), [guestName]);
@@ -126,11 +131,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const startCountdown = window.setTimeout(() => {
+      setCountdown(getCountdown(weddingDetails.event.startsAt));
+    }, 0);
+
     const timer = window.setInterval(() => {
       setCountdown(getCountdown(weddingDetails.event.startsAt));
     }, 1000);
 
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(startCountdown);
+      window.clearInterval(timer);
+    };
   }, []);
 
   function handleOpenInvitation() {
