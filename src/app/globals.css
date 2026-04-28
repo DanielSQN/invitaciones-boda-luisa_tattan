@@ -1,10 +1,10 @@
 :root {
-  --paper: #f7f2e8;
-  --ink: #25332f;
-  --ink-muted: #5d6259;
-  --sage-deep: #1f312e;
-  --sage-dark: #2d403b;
-  --gold: #b48748;
+  --paper: #f7f3ed;
+  --ink: #5c5345;
+  --ink-muted: #7a7063;
+  --sage-deep: #5c5345;
+  --sage-dark: #5c5345;
+  --gold: #b08d57;
   --font-display: "Cormorant Garamond", "Bodoni 72", "Didot", "Times New Roman",
     serif;
   --font-small-caps: "Cinzel", "Trajan Pro", "Times New Roman", serif;

@@ -4,60 +4,35 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./page.module.css";
 
 const WHATSAPP_NUMBER = "";
+const BIBLE_VERSE =
+  "El que halla esposa halla el bien, y alcanza la benevolencia de Jehova.";
 
 const weddingDetails = {
   couple: {
     bride: "Luisa",
     groom: "Tattan",
-    initials: "L | T",
+    initials: "L&T",
   },
   event: {
-    dateLabel: "26 de septiembre de 2026",
-    shortDate: "26.09.2026",
+    dateLabel: "26 de septiembre",
+    year: "2026",
     startsAt: "2026-09-26T16:00:00-05:00",
     calendarEnd: "2026-09-27T01:00:00-05:00",
-    locationName: "Lugar por confirmar",
-    address: "Direccion por confirmar",
   },
-  dressCode: {
-    title: "Elegante formal",
-    note: "Queremos que vivas la noche con comodidad y mucho encanto. Pronto compartiremos la paleta y detalles finales.",
+  ceremony: {
+    time: "5:00 PM",
+    place: "Iglesia de la Unidad",
+    address: "Calle 123 #45 - 67, Ciudad",
   },
-  schedule: [
-    {
-      time: "16:00 hrs",
-      title: "Ceremonia",
-      place: "Capilla por confirmar",
-      detail: "Nos encontraremos para celebrar el si.",
-    },
-    {
-      time: "18:30 hrs",
-      title: "Recepcion",
-      place: "Salon por confirmar",
-      detail: "Cena, brindis y momentos para guardar.",
-    },
-    {
-      time: "21:00 hrs",
-      title: "Fiesta",
-      place: "Mismo lugar",
-      detail: "Musica y celebracion hasta el amanecer.",
-    },
-    {
-      time: "00:00 hrs",
-      title: "Post fiesta",
-      place: "Zona lounge",
-      detail: "Un ultimo brindis para cerrar la noche.",
-    },
-  ],
-  itinerary: [
-    "Llegada de invitados",
-    "Ceremonia",
-    "Coctel",
-    "Cena",
-    "Brindis",
-    "Fiesta",
-  ],
+  reception: {
+    time: "7:30 PM",
+    place: "Hacienda San Miguel",
+    address: "Km 12 via al Sol, Ciudad",
+  },
+  dressCode: "Formal / Elegante",
 };
+
+type AnimationState = "closed" | "opening" | "revealed";
 
 type Countdown = {
   days: number;
@@ -100,7 +75,7 @@ function createCalendarUrl() {
     text: title,
     dates,
     details,
-    location: `${weddingDetails.event.locationName}, ${weddingDetails.event.address}`,
+    location: `${weddingDetails.ceremony.place}, ${weddingDetails.ceremony.address}`,
   });
 
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
@@ -117,8 +92,8 @@ function createWhatsappUrl(guestName: string) {
 }
 
 export default function Home() {
-  const detailsRef = useRef<HTMLElement | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const invitationRef = useRef<HTMLElement | null>(null);
+  const [animationState, setAnimationState] = useState<AnimationState>("closed");
   const [guestName, setGuestName] = useState("Invitado especial");
   const [countdown, setCountdown] = useState<Countdown>(initialCountdown);
 
@@ -151,43 +126,116 @@ export default function Home() {
     };
   }, []);
 
-  function handleOpenInvitation() {
-    setIsOpen(true);
+  function openInvitation() {
+    if (animationState !== "closed") {
+      return;
+    }
+
+    setAnimationState("opening");
+
     window.setTimeout(() => {
-      detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 950);
+      setAnimationState("revealed");
+    }, 1700);
+
+    window.setTimeout(() => {
+      invitationRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 2050);
   }
 
   return (
-    <main className={styles.page}>
-      <section className={styles.hero} aria-label="Invitacion de boda">
-        <header className={styles.heroHeader}>
-          <a className={styles.monogram} href="#inicio" aria-label="Inicio">
-            {weddingDetails.couple.initials}
-          </a>
-          <nav className={styles.topNav} aria-label="Navegacion principal">
-            <a href="#inicio">Inicio</a>
-            <a href="#informacion">Informacion</a>
-            <a href="#confirmar">Confirmar asistencia</a>
-          </nav>
-          <button className={styles.musicButton} type="button" aria-label="Musica">
-            ♪
-          </button>
-        </header>
+    <main className={styles.page} data-state={animationState}>
+      <section className={styles.hero} aria-label="Pantalla inicial">
+        <div className={styles.verseBlock}>
+          <span className={styles.ornament} aria-hidden="true" />
+          <p>{BIBLE_VERSE}</p>
+          <small>Proverbios 18:22</small>
+          <span className={styles.ornamentSmall} aria-hidden="true" />
+        </div>
 
-        <div className={styles.copy} id="inicio">
-          <p className={styles.kicker}>Nuestra boda</p>
+        <button
+          className={styles.envelopeButton}
+          type="button"
+          aria-expanded={animationState !== "closed"}
+          aria-label="Abrir la carta de invitacion"
+          onClick={openInvitation}
+        >
+          <span className={styles.innerCard} aria-hidden="true">
+            <span>Nuestra boda</span>
+            <strong>
+              {weddingDetails.couple.bride} &amp; {weddingDetails.couple.groom}
+            </strong>
+            <small>{weddingDetails.event.dateLabel}</small>
+          </span>
+
+          <span className={styles.envelope} aria-hidden="true">
+            <span className={styles.envelopeBack} />
+            <span className={styles.envelopePocket} />
+            <span className={styles.envelopeFlap}>
+              <span>Nuestra boda</span>
+              <small>{weddingDetails.event.dateLabel}</small>
+            </span>
+            <span className={styles.botanicalLeft} />
+            <span className={styles.botanicalRight} />
+            <span className={styles.seal}>
+              <span>{weddingDetails.couple.initials}</span>
+            </span>
+            <span className={styles.recipient}>
+              Para:
+              <i>{guestName}</i>
+            </span>
+          </span>
+        </button>
+
+        <button className={styles.openButton} type="button" onClick={openInvitation}>
+          <span aria-hidden="true" />
+          Haz clic en la carta para abrirla
+          <span aria-hidden="true" />
+        </button>
+      </section>
+
+      <section
+        className={styles.invitation}
+        ref={invitationRef}
+        aria-label="Invitacion completa"
+        aria-hidden={animationState === "closed"}
+      >
+        <div className={styles.invitationPaper}>
+          <p className={styles.script}>Nuestra boda</p>
+          <p className={styles.invitationDate}>
+            {weddingDetails.event.dateLabel} de {weddingDetails.event.year}
+          </p>
+          <span className={styles.divider} aria-hidden="true" />
+
           <h1>
             {weddingDetails.couple.bride} <span>&amp;</span> {weddingDetails.couple.groom}
           </h1>
-          <p className={styles.date}>{weddingDetails.event.dateLabel}</p>
+
+          <p className={styles.blessing}>
+            Con la bendicion de Dios tenemos el honor de invitarte a nuestra boda.
+          </p>
+
+          <div className={styles.detailsGrid}>
+            <article>
+              <p className={styles.script}>Ceremonia</p>
+              <strong>{weddingDetails.ceremony.time}</strong>
+              <span>{weddingDetails.ceremony.place}</span>
+              <small>{weddingDetails.ceremony.address}</small>
+            </article>
+
+            <article>
+              <p className={styles.script}>Recepcion</p>
+              <strong>{weddingDetails.reception.time}</strong>
+              <span>{weddingDetails.reception.place}</span>
+              <small>{weddingDetails.reception.address}</small>
+            </article>
+          </div>
 
           <div className={styles.countdown} aria-label="Cuenta regresiva para la boda">
             {[
               ["Dias", countdown.days],
               ["Horas", countdown.hours],
-              ["Minutos", countdown.minutes],
-              ["Segundos", countdown.seconds],
+              ["Min", countdown.minutes],
+              ["Seg", countdown.seconds],
             ].map(([label, value]) => (
               <span className={styles.countdownItem} key={label}>
                 <strong>{String(value).padStart(2, "0")}</strong>
@@ -195,164 +243,25 @@ export default function Home() {
               </span>
             ))}
           </div>
-        </div>
 
-        <button
-          className={`${styles.envelopeButton} ${isOpen ? styles.open : ""}`}
-          type="button"
-          aria-expanded={isOpen}
-          aria-label="Abrir la carta de invitacion"
-          onClick={handleOpenInvitation}
-        >
-          <span className={styles.card}>
-            <span className={styles.cardKicker}>Nos casamos</span>
-            <span className={styles.cardNames}>
-              {weddingDetails.couple.bride} <span>&amp;</span> {weddingDetails.couple.groom}
-            </span>
-            <span className={styles.cardDate}>{weddingDetails.event.shortDate}</span>
-          </span>
-
-          <span className={styles.envelope} aria-hidden="true">
-            <span className={styles.envelopeBack} />
-            <span className={styles.envelopePocket} />
-            <span className={styles.envelopeFlap} />
-            <span className={styles.recipient}>Para: {guestName}</span>
-            <span className={styles.seal}>
-              <span>L&amp;T</span>
-            </span>
-          </span>
-        </button>
-
-        <p className={styles.prompt}>
-          Haz clic en la carta
-          <span>para ver la invitaci&oacute;n</span>
-        </p>
-      </section>
-
-      <section
-        className={styles.details}
-        ref={detailsRef}
-        id="informacion"
-        aria-label="Detalles de la boda"
-      >
-        <aside className={styles.sideNav} aria-label="Secciones">
-          <p>{weddingDetails.couple.initials}</p>
-          <span aria-hidden="true" />
-          <a href="#inicio">Inicio</a>
-          <a href="#historia">Nuestra historia</a>
-          <a href="#detalles">Detalles</a>
-          <a href="#lugar">Lugar</a>
-          <a href="#dress-code">Dress code</a>
-          <a href="#confirmar">Confirmar asistencia</a>
-        </aside>
-
-        <div className={styles.detailContent}>
-          <section className={styles.opening} id="historia">
-            <div className={styles.sectionIntro}>
-              <p className={styles.kicker}>Nos casamos</p>
-              <h2>
-                {weddingDetails.couple.bride} <span>&amp;</span> {weddingDetails.couple.groom}
-              </h2>
-              <p>
-                Con la bendicion de Dios y de nuestros padres, queremos compartir contigo el dia
-                mas importante de nuestras vidas.
-              </p>
-              <p className={styles.scriptLine}>Gracias por ser parte de nuestra historia.</p>
-              <a className={styles.primaryButton} href="#confirmar">
-                Confirmar asistencia
-              </a>
-            </div>
-
-            <div className={styles.photoFrame} aria-label="Foto de los novios">
-              <div className={styles.couplePhoto} />
-            </div>
-          </section>
-
-          <section className={styles.eventDetails} id="detalles">
-            <p className={styles.kicker}>Detalles de nuestra boda</p>
-            <div className={styles.infoGrid}>
-              {weddingDetails.schedule.map((item) => (
-                <article className={styles.infoCard} key={item.title}>
-                  <span className={styles.detailIcon} aria-hidden="true">
-                    {item.title === "Ceremonia"
-                      ? "⌂"
-                      : item.title === "Recepcion"
-                        ? "♢"
-                        : item.title === "Fiesta"
-                          ? "♫"
-                          : "✦"}
-                  </span>
-                  <p>{item.time}</p>
-                  <h3>{item.title}</h3>
-                  <span>{item.place}</span>
-                  <small>{item.detail}</small>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <div className={styles.cardRow}>
-            <article className={styles.miniCard} id="lugar">
-              <p className={styles.kicker}>Lugar</p>
-              <h3>{weddingDetails.event.locationName}</h3>
-              <p>{weddingDetails.event.address}</p>
-              <a className={styles.textButton} href={calendarUrl} target="_blank" rel="noreferrer">
-                Agregar a Google Calendar
-              </a>
-            </article>
-
-            <article className={styles.miniCard} id="dress-code">
-              <p className={styles.kicker}>Dress code</p>
-              <h3>{weddingDetails.dressCode.title}</h3>
-              <div className={styles.palette} aria-hidden="true">
-                <span />
-                <span />
-                <span />
-                <span />
-                <span />
-              </div>
-              <p>{weddingDetails.dressCode.note}</p>
-            </article>
-
-            <article className={styles.miniCard}>
-              <p className={styles.kicker}>Nuestra historia</p>
-              <div className={styles.storyStrip} aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </div>
-              <p>Muy pronto agregaremos fotos y recuerdos de este camino juntos.</p>
-            </article>
+          <div className={styles.dressCode}>
+            <p className={styles.script}>Vestimenta</p>
+            <span>{weddingDetails.dressCode}</span>
           </div>
 
-          <section className={styles.itinerary} aria-label="Itinerario">
-            <p className={styles.kicker}>Itinerario</p>
-            <h3>Un dia para celebrar</h3>
-            <ol>
-              {weddingDetails.itinerary.map((item, index) => (
-                <li key={item}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  {item}
-                </li>
-              ))}
-            </ol>
-          </section>
-
-          <section className={styles.rsvp} id="confirmar" aria-label="Confirmar asistencia">
-            <p className={styles.kicker}>Confirmar asistencia</p>
-            <h3>Nos encantaria verte ahi</h3>
-            <p>
-              Cuando tengas claro si puedes acompanarnos, confirma por WhatsApp para ayudarnos a
-              preparar cada detalle.
-            </p>
-            <a className={styles.primaryButton} href={whatsappUrl} target="_blank" rel="noreferrer">
+          <div className={styles.actions}>
+            <a href={calendarUrl} target="_blank" rel="noreferrer">
+              Agregar al calendario
+            </a>
+            <a href={whatsappUrl} target="_blank" rel="noreferrer">
               Confirmar por WhatsApp
             </a>
-          </section>
+          </div>
 
-          <footer className={styles.footer}>
-            <p>Gracias por acompa&ntilde;arnos. Te esperamos.</p>
-          </footer>
+          <blockquote>
+            &quot;{BIBLE_VERSE}&quot;
+            <cite>Proverbios 18:22</cite>
+          </blockquote>
         </div>
       </section>
     </main>
