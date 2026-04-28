@@ -42,6 +42,12 @@ const weddingDetails = {
       place: "Mismo lugar",
       detail: "Musica y celebracion hasta el amanecer.",
     },
+    {
+      time: "00:00 hrs",
+      title: "Post fiesta",
+      place: "Zona lounge",
+      detail: "Un ultimo brindis para cerrar la noche.",
+    },
   ],
   itinerary: [
     "Llegada de invitados",
@@ -154,13 +160,22 @@ export default function Home() {
 
   return (
     <main className={styles.page}>
-      <div className={`${styles.floral} ${styles.floralTop}`} aria-hidden="true" />
-      <div className={`${styles.floral} ${styles.floralBottom}`} aria-hidden="true" />
-
       <section className={styles.hero} aria-label="Invitacion de boda">
-        <p className={styles.monogram}>{weddingDetails.couple.initials}</p>
+        <header className={styles.heroHeader}>
+          <a className={styles.monogram} href="#inicio" aria-label="Inicio">
+            {weddingDetails.couple.initials}
+          </a>
+          <nav className={styles.topNav} aria-label="Navegacion principal">
+            <a href="#inicio">Inicio</a>
+            <a href="#informacion">Informacion</a>
+            <a href="#confirmar">Confirmar asistencia</a>
+          </nav>
+          <button className={styles.musicButton} type="button" aria-label="Musica">
+            ♪
+          </button>
+        </header>
 
-        <div className={styles.copy}>
+        <div className={styles.copy} id="inicio">
           <p className={styles.kicker}>Nuestra boda</p>
           <h1>
             {weddingDetails.couple.bride} <span>&amp;</span> {weddingDetails.couple.groom}
@@ -214,74 +229,131 @@ export default function Home() {
         </p>
       </section>
 
-      <section className={styles.details} ref={detailsRef} aria-label="Detalles de la boda">
-        <div className={styles.sectionIntro}>
-          <p className={styles.kicker}>Con mucha alegria</p>
-          <h2>
-            {weddingDetails.couple.bride} <span>&amp;</span> {weddingDetails.couple.groom}
-          </h2>
-          <p>
-            Queremos compartir contigo un dia muy especial. Esta invitacion ira tomando forma
-            con los datos finales, pero desde ya nos hace felices contar con tu presencia.
-          </p>
-        </div>
+      <section
+        className={styles.details}
+        ref={detailsRef}
+        id="informacion"
+        aria-label="Detalles de la boda"
+      >
+        <aside className={styles.sideNav} aria-label="Secciones">
+          <p>{weddingDetails.couple.initials}</p>
+          <span aria-hidden="true" />
+          <a href="#inicio">Inicio</a>
+          <a href="#historia">Nuestra historia</a>
+          <a href="#detalles">Detalles</a>
+          <a href="#lugar">Lugar</a>
+          <a href="#dress-code">Dress code</a>
+          <a href="#confirmar">Confirmar asistencia</a>
+        </aside>
 
-        <div className={styles.infoGrid}>
-          {weddingDetails.schedule.map((item) => (
-            <article className={styles.infoCard} key={item.title}>
-              <p>{item.time}</p>
-              <h3>{item.title}</h3>
-              <span>{item.place}</span>
-              <small>{item.detail}</small>
+        <div className={styles.detailContent}>
+          <section className={styles.opening} id="historia">
+            <div className={styles.sectionIntro}>
+              <p className={styles.kicker}>Nos casamos</p>
+              <h2>
+                {weddingDetails.couple.bride} <span>&amp;</span> {weddingDetails.couple.groom}
+              </h2>
+              <p>
+                Con la bendicion de Dios y de nuestros padres, queremos compartir contigo el dia
+                mas importante de nuestras vidas.
+              </p>
+              <p className={styles.scriptLine}>Gracias por ser parte de nuestra historia.</p>
+              <a className={styles.primaryButton} href="#confirmar">
+                Confirmar asistencia
+              </a>
+            </div>
+
+            <div className={styles.photoFrame} aria-label="Foto de los novios">
+              <div className={styles.couplePhoto} />
+            </div>
+          </section>
+
+          <section className={styles.eventDetails} id="detalles">
+            <p className={styles.kicker}>Detalles de nuestra boda</p>
+            <div className={styles.infoGrid}>
+              {weddingDetails.schedule.map((item) => (
+                <article className={styles.infoCard} key={item.title}>
+                  <span className={styles.detailIcon} aria-hidden="true">
+                    {item.title === "Ceremonia"
+                      ? "⌂"
+                      : item.title === "Recepcion"
+                        ? "♢"
+                        : item.title === "Fiesta"
+                          ? "♫"
+                          : "✦"}
+                  </span>
+                  <p>{item.time}</p>
+                  <h3>{item.title}</h3>
+                  <span>{item.place}</span>
+                  <small>{item.detail}</small>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <div className={styles.cardRow}>
+            <article className={styles.miniCard} id="lugar">
+              <p className={styles.kicker}>Lugar</p>
+              <h3>{weddingDetails.event.locationName}</h3>
+              <p>{weddingDetails.event.address}</p>
+              <a className={styles.textButton} href={calendarUrl} target="_blank" rel="noreferrer">
+                Agregar a Google Calendar
+              </a>
             </article>
-          ))}
-        </div>
 
-        <div className={styles.splitSection}>
-          <article>
-            <p className={styles.kicker}>Dress code</p>
-            <h3>{weddingDetails.dressCode.title}</h3>
-            <p>{weddingDetails.dressCode.note}</p>
-          </article>
+            <article className={styles.miniCard} id="dress-code">
+              <p className={styles.kicker}>Dress code</p>
+              <h3>{weddingDetails.dressCode.title}</h3>
+              <div className={styles.palette} aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
+              <p>{weddingDetails.dressCode.note}</p>
+            </article>
 
-          <article>
-            <p className={styles.kicker}>Ubicacion</p>
-            <h3>{weddingDetails.event.locationName}</h3>
-            <p>{weddingDetails.event.address}</p>
-            <a className={styles.textButton} href={calendarUrl} target="_blank" rel="noreferrer">
-              Agregar a Google Calendar
+            <article className={styles.miniCard}>
+              <p className={styles.kicker}>Nuestra historia</p>
+              <div className={styles.storyStrip} aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+              <p>Muy pronto agregaremos fotos y recuerdos de este camino juntos.</p>
+            </article>
+          </div>
+
+          <section className={styles.itinerary} aria-label="Itinerario">
+            <p className={styles.kicker}>Itinerario</p>
+            <h3>Un dia para celebrar</h3>
+            <ol>
+              {weddingDetails.itinerary.map((item, index) => (
+                <li key={item}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  {item}
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section className={styles.rsvp} id="confirmar" aria-label="Confirmar asistencia">
+            <p className={styles.kicker}>Confirmar asistencia</p>
+            <h3>Nos encantaria verte ahi</h3>
+            <p>
+              Cuando tengas claro si puedes acompanarnos, confirma por WhatsApp para ayudarnos a
+              preparar cada detalle.
+            </p>
+            <a className={styles.primaryButton} href={whatsappUrl} target="_blank" rel="noreferrer">
+              Confirmar por WhatsApp
             </a>
-          </article>
+          </section>
+
+          <footer className={styles.footer}>
+            <p>Gracias por acompa&ntilde;arnos. Te esperamos.</p>
+          </footer>
         </div>
-
-        <section className={styles.itinerary} aria-label="Itinerario">
-          <p className={styles.kicker}>Itinerario</p>
-          <h3>Un dia para celebrar</h3>
-          <ol>
-            {weddingDetails.itinerary.map((item, index) => (
-              <li key={item}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                {item}
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section className={styles.rsvp} aria-label="Confirmar asistencia">
-          <p className={styles.kicker}>Confirmar asistencia</p>
-          <h3>Nos encantaria verte ahi</h3>
-          <p>
-            Cuando tengas claro si puedes acompanarnos, confirma por WhatsApp para ayudarnos a
-            preparar cada detalle.
-          </p>
-          <a className={styles.primaryButton} href={whatsappUrl} target="_blank" rel="noreferrer">
-            Confirmar por WhatsApp
-          </a>
-        </section>
-
-        <footer className={styles.footer}>
-          <p>Gracias por acompa&ntilde;arnos. Te esperamos.</p>
-        </footer>
       </section>
     </main>
   );
